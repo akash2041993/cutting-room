@@ -1,0 +1,78 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/*.html'
+      - 'supabase/**'
+      - 'tests/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install packages
+        run: npm install --no-audit --no-fund
+
+      - name: Prepare web files (stops here if docs/config.js still has PASTE_YOUR... placeholders)
+        run: node scripts/prepare-www.mjs
+
+      - name: Create the Android project
+        run: npx cap add android
+
+      - name: Icon, splash screen and version number
+        run: node scripts/android-extras.mjs
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+
+      - name: Copy web files into the Android project
+        run: npx cap sync android
+
+      - name: Build
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Sign the APK
+        run: |
+          set -e
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          BT=$(ls -d "$SDK"/build-tools/* | sort -V | tail -1)
+          IN=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          echo "build-tools: $BT"; echo "input: $IN"
+          "$BT/zipalign" -p -f 4 "$IN" aligned.apk
+          "$BT/apksigner" sign --ks resources/release.keystore --ks-key-alias cuttingroom \
+            --ks-pass pass:cuttingroom --key-pass pass:cuttingroom --out CuttingRoom.apk aligned.apk
+          "$BT/apksigner" verify --print-certs CuttingRoom.apk
+          ls -l CuttingRoom.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CuttingRoom-apk
+          path: CuttingRoom.apk
+
+      - name: Publish under Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Cutting Room build ${{ github.run_number }}
+          body: Install CuttingRoom.apk on an Android phone (Android 7 or newer).
+          files: CuttingRoom.apk
+          make_latest: true
