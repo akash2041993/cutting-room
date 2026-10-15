@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>{name} - video editors and clients</title>
+<meta name="description" content="Video editors find work. Clients find editors. One-time fee, every post checked before it goes live.">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main>
+<a class="brand" href="index.html"><i></i><span data-cfg="BUSINESS_NAME">Cutting Room</span></a>
+<h1>Video editors find work.<br>Clients find editors.</h1>
+<p>Editors list their price and portfolio. Clients post jobs. Every post is checked by a person before it goes live, so what you see is real.</p>
+<div class="card">
+  <p><a id="dl" class="btn" href="#">Download the Android app</a></p>
+  <p class="muted">Android 7 or newer. Your phone may ask you to allow installs from your browser or files app, because the app is not from the Play Store. That is normal for apps shared directly.</p>
+</div>
+<h2>How it works</h2>
+<ul>
+  <li><strong>1. Sign up</strong> as an Editor or a Client. It is free to register.</li>
+  <li><strong>2. Post</strong> your editor profile or your job.</li>
+  <li><strong>3. We check it.</strong> You are notified when it is approved or if something needs fixing.</li>
+  <li><strong>4. Pay once</strong> (₹<span data-cfg="PRICE_RUPEES">500</span>) and your post goes live. Editors see jobs. Clients see editors.</li>
+</ul>
+<p class="muted">Questions: <span data-cfg="SUPPORT_EMAIL"></span></p>
+<footer><a href="index.html">Home</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refunds</a></footer>
+</main>
+<script src="config.js"></script>
+<script src="site.js"></script>
+<script>
+// Works out the GitHub download link from this page's own address (user.github.io/repo/) so nothing needs editing.
+(function () {
+  var host = location.hostname, parts = location.pathname.split('/').filter(Boolean);
+  var dl = document.getElementById('dl');
+  if (/\.github\.io$/.test(host) && parts[0]) dl.href = 'https://github.com/' + host.split('.')[0] + '/' + parts[0] + '/releases/latest/download/CuttingRoom.apk';
+  else { dl.textContent = 'Download link appears here once this site is on GitHub Pages'; dl.setAttribute('aria-disabled', 'true'); dl.removeAttribute('href'); }
+})();
+</script>
+</body>
+</html>

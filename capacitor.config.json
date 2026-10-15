@@ -1,0 +1,7 @@
+{
+  "appId": "in.cuttingroom.app",
+  "appName": "Cutting Room",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "backgroundColor": "#0e1115" }
+}
